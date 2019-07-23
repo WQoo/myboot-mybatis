@@ -2,8 +2,17 @@ package com.ranger.mybootmybatis.checkFile;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,9 +31,18 @@ public class CheckFile {
 
     private static String pattern = "[\\d\\D]and.*gcc.*segment1[\\d\\D]";
 
-    private static List<String> KEY_WORD_LIST = Arrays.asList("RA_CUSTOMER_TRX_ALL.ATTRIBUTE8",
-            "apps.RA_INTERFACE_LINES_ALL.INTERFACE_LINE_ATTRIBUTE2",
-            "apps.AR_CASH_RECEIPTS_ALL.ATTRIBUTE15");
+    private static String key_pattern = "[\\d\\D]ranger\\s";
+
+    public static List<String> KEY_WORD_LIST = Arrays.asList("DIM_CUX_COA_AC1_V",
+            "DIM_CUX_COA_AC2_V",
+            "DIM_CUX_COA_AC3_V",
+            "DIM_CUX_COA_SEG1_V",
+            "DIM_CUX_COA_SEG2_V",
+            "DIM_CUX_COA_SEG3_V",
+            "DIM_CUX_COA_SEG4_V",
+            "DIM_CUX_COA_SEG5_V",
+            "DIM_CUX_COA_SEG6_V"
+    );
 
     /*NotSave*/
     private static Set<String> fileNameSet = new LinkedHashSet<>();
@@ -71,16 +89,7 @@ public class CheckFile {
         InputStream inputStream = null;
         BufferedReader reader = null;
         StringBuffer stringBuffer;
-        List<String> KEY_WORD_LIST = Arrays.asList("DW.DIM_CUX_COA_AC1_V",
-                "DW.DIM_CUX_COA_AC2_V",
-                "DW.DIM_CUX_COA_AC3_V",
-                "DW.DIM_CUX_COA_SEG1_V",
-                "DW.DIM_CUX_COA_SEG2_V",
-                "DW.DIM_CUX_COA_SEG3_V",
-                "DW.DIM_CUX_COA_SEG4_V",
-                "DW.DIM_CUX_COA_SEG5_V",
-                "DW.DIM_CUX_COA_SEG6_V"
-        );
+
         try {
             inputStream = new FileInputStream(file);
             String line; // 用来保存每行读取的内容
@@ -93,17 +102,9 @@ public class CheckFile {
                 line = reader.readLine(); // 读取下一行
             }
             String str = stringBuffer.toString();
-/*          Pattern r = Pattern.compile(pattern);
-            Matcher m = r.matcher(str);
-            if(m.find()){
-                System.out.println(file.getName());
-                System.out.println("匹配子句：----------》" + m.group());
-            }*/
-            KEY_WORD_LIST.forEach(key->{
-                if(stringBuffer.toString().contains(key)){
-                    fileNameSet.add(file.getName());
-                }
-            });
+            //listContain(file,str);
+            listPattern(file,str);
+            // singlePattern(file,str);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -113,5 +114,35 @@ public class CheckFile {
             IOUtils.closeQuietly(inputStream);
         }
 
+    }
+
+    public static void listPattern(File file,String words){
+        KEY_WORD_LIST.forEach(key->{
+            String pattern = key_pattern.replaceAll("ranger",key.toLowerCase());
+            Pattern r = Pattern.compile(pattern);
+            Matcher m = r.matcher(words);
+            if(m.find()){
+                System.out.println(file.getName());
+                System.out.println("匹配子句：----------》" + m.group());
+                fileNameSet.add(file.getName());
+            }
+        });
+    }
+
+    public static void singlePattern(File file,String words){
+        Pattern r = Pattern.compile(key_pattern);
+        Matcher m = r.matcher(words);
+        if(m.find()){
+            System.out.println(file.getName());
+            System.out.println("匹配子句：----------》" + m.group());
+        }
+    }
+
+    public static void listContain(File file,String words){
+        KEY_WORD_LIST.forEach(key->{
+            if(words.contains(key.toLowerCase())){
+                fileNameSet.add(file.getName());
+            }
+        });
     }
 }

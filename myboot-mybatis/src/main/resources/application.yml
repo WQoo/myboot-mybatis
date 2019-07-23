@@ -7,3 +7,16 @@ spring:
     password: rootroot
     url: jdbc:mysql://127.0.0.1:3306/ranger?useUnicode=true&characterEncoding=utf8
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.ranger.mybootmybatis.*.dto
+  type-handlers-package: com.ranger.mybootmybatis.base.type
+
+#pagehelper
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+  returnPageInfo: check
