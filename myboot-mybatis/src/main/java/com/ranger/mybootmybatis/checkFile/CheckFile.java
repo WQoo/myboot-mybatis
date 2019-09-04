@@ -25,8 +25,9 @@ import java.util.regex.Pattern;
  */
 public class CheckFile {
     private static String PATH = "/Volumes/work/usr/local/svn/cmcc/04系统开发/04.代码管理/20报表开发";
-    private static String KEY_WORDS = "and gcc.segment1 like '${公司段}%'";
-    private static String FILE_SUFFIX = ".cpt";
+    private static String WEB_PATH = "/Volumes/work/usr/local/project/CmccReport/core/src/main/webapp/WEB-INF";
+    private static String KEY_WORDS = "dw.dw_xla_balance_plus_desc";
+    private static String FILE_SUFFIX = ".html";
     private static String FAR_AWATY_PATH = "/Volumes/work/usr/local/fileZ/reportlets";
 
     private static String pattern = "[\\d\\D]and.*gcc.*segment1[\\d\\D]";
@@ -73,15 +74,16 @@ public class CheckFile {
                 if(childFile.isDirectory()){
                     loopFile(childFile);
                 }else{
-                    if(childFile.getName().endsWith(FILE_SUFFIX)){
+/*                    if(childFile.getName().endsWith(FILE_SUFFIX)){
+                        System.out.println(childFile.getName());
                         isContainWords(childFile,KEY_WORDS);
-                    }
+                    }*/
+                    isContainWords(childFile,KEY_WORDS);
                 }
             });
             fileNameSet.forEach(set->{
                 System.out.println(set.toString());
             });
-
         }
     }
 
@@ -103,7 +105,8 @@ public class CheckFile {
             }
             String str = stringBuffer.toString();
             //listContain(file,str);
-            listPattern(file,str);
+            singleContain(file,str);
+            //listPattern(file,str);
             // singlePattern(file,str);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -135,6 +138,12 @@ public class CheckFile {
         if(m.find()){
             System.out.println(file.getName());
             System.out.println("匹配子句：----------》" + m.group());
+        }
+    }
+
+    public static void singleContain(File file,String words){
+        if(words.toLowerCase().contains(KEY_WORDS.toLowerCase())){
+            fileNameSet.add(file.getName());
         }
     }
 
